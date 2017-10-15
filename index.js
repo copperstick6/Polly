@@ -14,16 +14,17 @@ exports.polly = (req, res) => {
     app.ask('Got it. We\'re listening. Keep the app open and we\'ll analyze everything we get')
   }
   function listenIntent(app){
-	  app.tell(app.data.politics)
-	  indico.analyzeText(
-    [
-        String(app.data.politics)
-    ],
-    {apis: ['sentiment_hq', 'political', 'keywords']}
-	)
-	.then(function(response){
-	app.tell(String(JSON.parse(response)))
-	})
+	  var options = { method: 'POST',
+  url: 'http://fd13720f.ngrok.io/setData',
+  headers:
+   { 'postman-token': '9c7b96c6-d64d-cc20-09d1-63e791da8d32',
+     'cache-control': 'no-cache',
+     'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
+  formData: { politics: app.data.politics } };
+
+	request(options, function (error, response, body) {
+  	app.tell("We got your data, go ahead and navigate to our website for more info.")
+	});
 }
 
   let actionMap = new Map();
