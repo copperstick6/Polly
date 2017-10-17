@@ -62,20 +62,21 @@ def getChoices():
 @app.route('/getData')
 @crossdomain(origin='*')
 def getData():
-	return str(data)
+	return json.dumps(data)
 
 @app.route('/getAll')
 @crossdomain(origin='*')
 def getAll():
-	return str([sentences, data])
+	return json.dumps([sentences, data])
 
 
 @app.route("/setData", methods=['POST'])
 @crossdomain(origin='*')
 def setData():
-	data.append(json.dumps(indicoio.analyze_text(str(request.form['politics']), apis=['political', 'sentiment_hq', 'keywords'])))
+	currentData = json.dumps(indicoio.analyze_text(str(request.form['politics']), apis=['political', 'sentiment_hq', 'keywords']))
+	data.append(currentData)
 	sentences.append(request.form['politics'])
-	return "Got it"
+	return str(currentData)
 
 app.run(debug=True, port =5001)
 CORS(app)

@@ -3,8 +3,6 @@
 const ApiAiApp = require('actions-on-google').ApiAiApp
 
 var request = require('request');
-var indico = require('indico.io');
-indico.apiKey =  'ac848d3569d2ba24acc5e274a0b6676d';
 const WELCOME_INTENT = 'input.welcome'; //this is the name rom the API.AI intent. check the API.AI event console.
 const LISTEN_INTENT = 'input.listen'
 
@@ -23,7 +21,28 @@ exports.polly = (req, res) => {
   formData: { politics: app.data.politics } };
 
 	request(options, function (error, response, body) {
-  	app.tell("We got your data, go ahead and navigate to our website for more info.")
+		response = JSON.parse(body)
+		let mood = "sad"
+		let keywords = "";
+		let max = 1
+		let party = ""
+		if (parseFloat(response['sentiment_hq']) > parseFloat(0.5)){
+			mood = "happy"
+		}
+		for(var i in response['keywords']){
+			keywords+= i
+			keywords +=" "
+		}
+		for(var j in response['political']){
+			if(parseFloat(response['political'][j]) > .05){
+				if(parseFloat(response['political'][j]) > .5){
+					party+= " strongly " + j + " with a value of " + parseFloat(response['political'][j]).toFixed(4)
+				}
+				party+=j
+				party += ", "
+			}
+		}
+  	app.tell("Analysis: The general mood seems to be: " + String(mood) + ". The keywords are: " + String(keywords) + " The conversation is "  String(party) + " with a value of " + String(max.toFixed(4)))
 	});
 }
 
